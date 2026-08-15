@@ -2,13 +2,9 @@ const STORAGE_KEY = "worthit_profile_v1";
 const HISTORY_KEY = "worthit_history_v1";
 const HISTORY_LIMIT = 15;
 
-const DEFAULT_PROFILE = {
-  netSalary: null,
-  hoursPerWeek: 40,
-  daysPerWeek: 5,
-  annualReturn: 7,
-  investYears: 5,
-};
+// Rendimento medio annuo storico del FTSE All-World negli ultimi 10 anni (~10,97%, dati FTSE Russell), arrotondato.
+const ANNUAL_RETURN = 11;
+const INVEST_YEARS = 10;
 
 function loadProfile() {
   try {
@@ -104,7 +100,6 @@ const emptyState = document.getElementById("empty-state");
 const setupSalary = document.getElementById("setup-salary");
 const setupHours = document.getElementById("setup-hours");
 const setupDays = document.getElementById("setup-days");
-const setupReturn = document.getElementById("setup-return");
 const setupError = document.getElementById("setup-error");
 const setupSaveBtn = document.getElementById("setup-save");
 
@@ -131,7 +126,6 @@ const settingsOverlay = document.getElementById("settings-overlay");
 const settingsSalary = document.getElementById("settings-salary");
 const settingsHours = document.getElementById("settings-hours");
 const settingsDays = document.getElementById("settings-days");
-const settingsReturn = document.getElementById("settings-return");
 const settingsError = document.getElementById("settings-error");
 const settingsSaveBtn = document.getElementById("settings-save");
 const settingsCloseBtn = document.getElementById("settings-close");
@@ -153,9 +147,9 @@ function showView(view) {
 }
 
 function init() {
+  investYearsLabel.textContent = INVEST_YEARS;
   if (profile) {
     showView(mainView);
-    investYearsLabel.textContent = profile.investYears;
   } else {
     showView(setupView);
   }
@@ -172,7 +166,6 @@ setupSaveBtn.addEventListener("click", () => {
   const salary = parseFloat(setupSalary.value.replace(",", "."));
   const hours = parseFloat(setupHours.value.replace(",", "."));
   const days = parseFloat(setupDays.value.replace(",", "."));
-  const ret = parseFloat((setupReturn.value || "7").replace(",", "."));
 
   const err = validateInputs(salary, hours, days);
   if (err) {
@@ -186,11 +179,8 @@ setupSaveBtn.addEventListener("click", () => {
     netSalary: salary,
     hoursPerWeek: hours,
     daysPerWeek: days,
-    annualReturn: isNaN(ret) ? 7 : ret,
-    investYears: 5,
   };
   saveProfile(profile);
-  investYearsLabel.textContent = profile.investYears;
   showView(mainView);
 });
 
@@ -198,7 +188,7 @@ function showResult(cost, options) {
   const record = !options || options.record !== false;
   const wage = hourlyWage(profile);
   const hoursNeeded = cost / wage;
-  const fv = futureValue(cost, profile.annualReturn, profile.investYears);
+  const fv = futureValue(cost, ANNUAL_RETURN, INVEST_YEARS);
   const gain = fv - cost;
   const roundedHours = Math.round(hoursNeeded * 10) / 10;
   const workTimeLabel = formatWorkTime(hoursNeeded, profile);
@@ -206,8 +196,8 @@ function showResult(cost, options) {
   workTimeValue.textContent = workTimeLabel;
   workTimeDetail.textContent = `${formatNum(roundedHours)} ore a ${formatCurrency(wage)}/ora`;
   investedValue.textContent = formatCurrency(fv);
-  investedGain.textContent = `+${formatCurrency(gain)} stimati (${profile.annualReturn}%/anno)`;
-  renderGrowthChart(cost, profile.annualReturn, profile.investYears);
+  investedGain.textContent = `+${formatCurrency(gain)} stimati (${ANNUAL_RETURN}%/anno)`;
+  renderGrowthChart(cost, ANNUAL_RETURN, INVEST_YEARS);
 
   emptyState.style.display = "none";
   resultCard.hidden = false;
@@ -349,7 +339,6 @@ function openSettings() {
   settingsSalary.value = profile.netSalary;
   settingsHours.value = profile.hoursPerWeek;
   settingsDays.value = profile.daysPerWeek;
-  settingsReturn.value = profile.annualReturn;
   settingsError.classList.remove("active");
   openModal(settingsOverlay);
 }
@@ -424,7 +413,6 @@ settingsSaveBtn.addEventListener("click", () => {
   const salary = parseFloat(settingsSalary.value.replace(",", "."));
   const hours = parseFloat(settingsHours.value.replace(",", "."));
   const days = parseFloat(settingsDays.value.replace(",", "."));
-  const ret = parseFloat((settingsReturn.value || "7").replace(",", "."));
 
   const err = validateInputs(salary, hours, days);
   if (err) {
@@ -438,10 +426,8 @@ settingsSaveBtn.addEventListener("click", () => {
     netSalary: salary,
     hoursPerWeek: hours,
     daysPerWeek: days,
-    annualReturn: isNaN(ret) ? 7 : ret,
   };
   saveProfile(profile);
-  investYearsLabel.textContent = profile.investYears;
   closeSettings();
 
   if (!resultCard.hidden) {
