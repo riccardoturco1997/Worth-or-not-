@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+  <title>Worth It?</title>
+  <meta name="description" content="Scopri quante ore di lavoro costa un acquisto e cosa renderebbe se investissi quei soldi in un indice mondiale." />
+  <meta name="theme-color" content="#7c3aed" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="phone">
+
+    <!-- SETUP / PROFILO INIZIALE -->
+    <section id="setup-view" class="view">
+      <div class="setup-hero">💸</div>
+      <h1 class="title">WORTH IT?</h1>
+      <p class="subtitle">Prima crea il tuo profilo: ci serve per calcolare quante ore lavori per ogni acquisto.</p>
+
+      <div class="card">
+        <div class="field">
+          <label for="setup-salary">Retribuzione netta mensile (€)</label>
+          <input type="number" id="setup-salary" inputmode="decimal" placeholder="es. 1600" min="0" />
+        </div>
+        <div class="field">
+          <label for="setup-hours">Ore lavorate a settimana</label>
+          <input type="number" id="setup-hours" inputmode="decimal" placeholder="es. 40" value="40" min="1" max="168" />
+        </div>
+        <div class="field">
+          <label for="setup-days">Giorni lavorativi a settimana</label>
+          <input type="number" id="setup-days" inputmode="decimal" placeholder="es. 5" value="5" min="1" max="7" />
+          <div class="hint">Serve per convertire le ore in "giorni e ore".</div>
+        </div>
+        <p id="setup-error" class="error-text"></p>
+        <button id="setup-save" class="btn btn-primary">Crea profilo</button>
+      </div>
+    </section>
+
+    <!-- SCHERMATA PRINCIPALE -->
+    <section id="main-view" class="view">
+      <div class="topbar">
+        <button id="history-btn" class="icon-btn" title="Cronologia" aria-label="Cronologia calcoli">🕘</button>
+        <button id="settings-btn" class="icon-btn" title="Modifica profilo" aria-label="Impostazioni">⚙️</button>
+      </div>
+
+      <h1 class="title">WORTH IT?</h1>
+      <p class="subtitle">Quanto ti costa davvero, in ore di vita e in occasioni perse?</p>
+
+      <div class="card">
+        <div class="field">
+          <label for="product-cost">Costo del prodotto (€)</label>
+          <input type="number" id="product-cost" inputmode="decimal" placeholder="es. 250" min="0" />
+        </div>
+        <button id="calc-btn" class="btn btn-primary">Calcola</button>
+      </div>
+
+      <div id="empty-state" class="empty-state">
+        <div class="empty-icon">🤔</div>
+        <p>Inserisci un prezzo e scopri se ne vale davvero la pena.</p>
+      </div>
+
+      <div id="result-card" class="result-card" hidden aria-live="polite">
+        <div class="result-block">
+          <div class="result-heading"><span class="heading-icon">⏰</span><span>Tempo di lavoro necessario</span></div>
+          <div class="value" id="work-time-value">—</div>
+          <div class="sub-value" id="work-time-detail"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="result-block">
+          <div class="result-heading"><span class="heading-icon">📈</span><span>Se lo investissi per <span id="invest-years-label">10</span> anni</span></div>
+          <div class="value" id="invested-value">—</div>
+          <div class="sub-value positive" id="invested-gain"></div>
+
+          <div class="chart-wrap">
+            <svg id="growth-chart" viewBox="0 0 300 120" preserveAspectRatio="none" role="img" aria-label="Andamento stimato dell'investimento anno per anno"></svg>
+            <div class="chart-axis">
+              <span id="chart-label-start">—</span>
+              <span id="chart-label-end">—</span>
+            </div>
+            <p class="chart-readout" id="chart-readout">Tocca il grafico per vedere il valore anno per anno</p>
+          </div>
+        </div>
+
+        <button id="guide-btn" class="guide-link" type="button">Scopri come funziona l'investimento →</button>
+
+        <p class="disclaimer">Stima basata sul rendimento medio annuo storico del FTSE All-World negli ultimi 10 anni (~11%/anno). I rendimenti passati non garantiscono risultati futuri.</p>
+      </div>
+
+      <div class="btn-row is-hidden" id="action-row">
+        <button id="reset-btn" class="btn btn-secondary">Nuovo calcolo</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODALE IMPOSTAZIONI -->
+  <div id="settings-overlay" class="modal-overlay">
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h2 id="settings-title">Modifica profilo</h2>
+      <div class="field">
+        <label for="settings-salary">Retribuzione netta mensile (€)</label>
+        <input type="number" id="settings-salary" inputmode="decimal" min="0" />
+      </div>
+      <div class="field">
+        <label for="settings-hours">Ore lavorate a settimana</label>
+        <input type="number" id="settings-hours" inputmode="decimal" min="1" max="168" />
+      </div>
+      <div class="field">
+        <label for="settings-days">Giorni lavorativi a settimana</label>
+        <input type="number" id="settings-days" inputmode="decimal" min="1" max="7" />
+      </div>
+      <p id="settings-error" class="error-text"></p>
+      <div class="btn-row">
+        <button id="settings-close" class="btn btn-secondary">Annulla</button>
+        <button id="settings-save" class="btn btn-primary">Salva</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE CRONOLOGIA -->
+  <div id="history-overlay" class="modal-overlay">
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="history-title">
+      <h2 id="history-title">Cronologia</h2>
+      <p id="history-empty" class="history-empty">Non hai ancora calcolato nulla. I tuoi ultimi acquisti valutati appariranno qui.</p>
+      <ul id="history-list" class="history-list"></ul>
+      <div class="btn-row">
+        <button id="history-clear" class="btn btn-secondary">Cancella</button>
+        <button id="history-close" class="btn btn-primary">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE MINI-GUIDA INVESTIMENTI -->
+  <div id="guide-overlay" class="modal-overlay">
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <h2 id="guide-title">Le basi, in breve</h2>
+
+      <div class="guide-section">
+        <h3>Cos'è il FTSE All-World</h3>
+        <p>È l'indice usato in questa app: un paniere che raccoglie migliaia di aziende di mercati sviluppati ed emergenti di tutto il mondo. Comprarlo (ad es. tramite un ETF che lo replica) significa diventare comproprietario di un pezzettino di ciascuna, invece di scommettere su una sola azienda.</p>
+      </div>
+
+      <div class="guide-section">
+        <h3>L'interesse composto</h3>
+        <p>I guadagni di un anno iniziano a generare a loro volta altri guadagni l'anno dopo. Per questo il grafico curva verso l'alto: più tempo resta investito il capitale, più l'effetto si amplifica.</p>
+      </div>
+
+      <div class="guide-section">
+        <h3>Rischio e orizzonte temporale</h3>
+        <p>Il valore reale non cresce mai in linea retta come nel grafico: sale e scende con i mercati, anche del 20-30% in un anno. L'11%/anno usato qui è la media storica del FTSE All-World sugli ultimi 10 anni, non una previsione: ha senso solo come riferimento su orizzonti lunghi (10+ anni), mai a breve termine.</p>
+      </div>
+
+      <div class="guide-section">
+        <h3>Diversificazione</h3>
+        <p>Investire in un indice mondiale invece che in singoli titoli riduce il rischio legato a una singola azienda o a un singolo paese, senza eliminare il rischio di mercato nel suo complesso.</p>
+      </div>
+
+      <p class="disclaimer">Questo è materiale puramente informativo ed educativo, non una consulenza finanziaria personalizzata. Prima di investire, valuta la tua situazione con una persona qualificata.</p>
+
+      <button id="guide-close" class="btn btn-primary">Ho capito</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
