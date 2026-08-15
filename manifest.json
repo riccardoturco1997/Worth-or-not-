@@ -1,0 +1,19 @@
+{
+  "name": "Worth It?",
+  "short_name": "Worth It?",
+  "description": "Scopri quante ore di lavoro costa un acquisto e cosa renderebbe se lo investissi.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ede9fe",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
