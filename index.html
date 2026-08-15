@@ -49,7 +49,7 @@
     <!-- SCHERMATA PRINCIPALE -->
     <section id="main-view" class="view">
       <div class="topbar">
-        <div class="spacer"></div>
+        <button id="history-btn" class="icon-btn" title="Cronologia" aria-label="Cronologia calcoli">🕘</button>
         <button id="settings-btn" class="icon-btn" title="Modifica profilo" aria-label="Impostazioni">⚙️</button>
       </div>
 
@@ -82,7 +82,18 @@
           <div class="result-heading"><span class="heading-icon">📈</span><span>Se lo investissi per <span id="invest-years-label">5</span> anni</span></div>
           <div class="value" id="invested-value">—</div>
           <div class="sub-value positive" id="invested-gain"></div>
+
+          <div class="chart-wrap">
+            <svg id="growth-chart" viewBox="0 0 300 120" preserveAspectRatio="none" role="img" aria-label="Andamento stimato dell'investimento anno per anno"></svg>
+            <div class="chart-axis">
+              <span id="chart-label-start">—</span>
+              <span id="chart-label-end">—</span>
+            </div>
+            <p class="chart-readout" id="chart-readout">Tocca il grafico per vedere il valore anno per anno</p>
+          </div>
         </div>
+
+        <button id="guide-btn" class="guide-link" type="button">Scopri come funziona l'investimento →</button>
 
         <p class="disclaimer">Stima basata sul rendimento medio storico di un indice azionario mondiale. I rendimenti passati non garantiscono risultati futuri.</p>
       </div>
@@ -119,6 +130,50 @@
         <button id="settings-close" class="btn btn-secondary">Annulla</button>
         <button id="settings-save" class="btn btn-primary">Salva</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODALE CRONOLOGIA -->
+  <div id="history-overlay" class="modal-overlay">
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="history-title">
+      <h2 id="history-title">Cronologia</h2>
+      <p id="history-empty" class="history-empty">Non hai ancora calcolato nulla. I tuoi ultimi acquisti valutati appariranno qui.</p>
+      <ul id="history-list" class="history-list"></ul>
+      <div class="btn-row">
+        <button id="history-clear" class="btn btn-secondary">Cancella</button>
+        <button id="history-close" class="btn btn-primary">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALE MINI-GUIDA INVESTIMENTI -->
+  <div id="guide-overlay" class="modal-overlay">
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <h2 id="guide-title">Le basi, in breve</h2>
+
+      <div class="guide-section">
+        <h3>Cos'è un indice azionario mondiale</h3>
+        <p>È un paniere che raccoglie migliaia di aziende di tutto il mondo (es. MSCI World). Comprarlo significa diventare comproprietario di un pezzettino di ciascuna, invece di scommettere su una sola azienda.</p>
+      </div>
+
+      <div class="guide-section">
+        <h3>L'interesse composto</h3>
+        <p>I guadagni di un anno iniziano a generare a loro volta altri guadagni l'anno dopo. Per questo il grafico curva verso l'alto: più tempo resta investito il capitale, più l'effetto si amplifica.</p>
+      </div>
+
+      <div class="guide-section">
+        <h3>Rischio e orizzonte temporale</h3>
+        <p>Il valore reale non cresce mai in linea retta come nel grafico: sale e scende con i mercati, anche del 20-30% in un anno. Per questo il rendimento medio storico ha senso solo su orizzonti lunghi (5+ anni), non come previsione a breve termine.</p>
+      </div>
+
+      <div class="guide-section">
+        <h3>Diversificazione</h3>
+        <p>Investire in un indice mondiale invece che in singoli titoli riduce il rischio legato a una singola azienda o a un singolo paese, senza eliminare il rischio di mercato nel suo complesso.</p>
+      </div>
+
+      <p class="disclaimer">Questo è materiale puramente informativo ed educativo, non una consulenza finanziaria personalizzata. Prima di investire, valuta la tua situazione con una persona qualificata.</p>
+
+      <button id="guide-close" class="btn btn-primary">Ho capito</button>
     </div>
   </div>
 
