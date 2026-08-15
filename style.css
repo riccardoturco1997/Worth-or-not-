@@ -11,6 +11,13 @@
   --danger: #dc2626;
   --radius-lg: 28px;
   --radius-md: 18px;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* z-index scale */
+  --z-sticky: 10;
+  --z-modal-backdrop: 20;
+  --z-modal: 21;
 }
 
 * {
@@ -50,11 +57,11 @@ body {
   margin-bottom: 8px;
 }
 
-.topbar .spacer { width: 40px; }
+.topbar .spacer { width: 44px; }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.6);
@@ -63,6 +70,18 @@ body {
   justify-content: center;
   font-size: 20px;
   cursor: pointer;
+  transition: transform 0.15s var(--ease-out-quart), background-color 0.15s ease;
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+@media (hover: hover) {
+  .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.85);
+  }
 }
 
 .view {
@@ -79,8 +98,9 @@ body {
   text-align: center;
   font-size: 30px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   margin: 18px 0 6px;
+  text-wrap: balance;
 }
 
 .subtitle {
@@ -88,6 +108,7 @@ body {
   color: var(--muted);
   font-size: 14px;
   margin-bottom: 28px;
+  text-wrap: balance;
 }
 
 .card {
@@ -102,6 +123,10 @@ body {
   margin-bottom: 18px;
 }
 
+.field:last-of-type {
+  margin-bottom: 22px;
+}
+
 .field label {
   display: block;
   font-size: 13px;
@@ -114,6 +139,7 @@ body {
   font-size: 12px;
   color: var(--muted);
   margin-top: 6px;
+  line-height: 1.4;
 }
 
 input[type="number"], input[type="text"] {
@@ -125,12 +151,30 @@ input[type="number"], input[type="text"] {
   font-weight: 600;
   background: #faf9ff;
   color: var(--ink);
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 input[type="number"]:focus, input[type="text"]:focus {
   outline: none;
   border-color: var(--accent);
   background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.14);
+}
+
+input.input-error {
+  border-color: var(--danger);
+}
+
+input.shake {
+  animation: shake 0.36s var(--ease-out-quart);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
 }
 
 .btn {
@@ -141,16 +185,29 @@ input[type="number"]:focus, input[type="text"]:focus {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.08s ease;
+  transition: transform 0.12s var(--ease-out-quart), box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
 .btn:active {
   transform: scale(0.98);
 }
 
+.btn:focus-visible,
+.icon-btn:focus-visible,
+input:focus-visible {
+  outline: 2.5px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .btn-primary {
   background: var(--accent-dark);
   color: #ffffff;
+}
+
+@media (hover: hover) {
+  .btn-primary:hover {
+    box-shadow: 0 8px 20px -8px rgba(31, 19, 48, 0.5);
+  }
 }
 
 .btn-secondary {
@@ -165,13 +222,23 @@ input[type="number"]:focus, input[type="text"]:focus {
   padding: 10px;
 }
 
+.btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .btn-row {
   display: flex;
   gap: 12px;
   margin-top: auto;
+  padding-top: 16px;
 }
 
 .btn-row .btn { flex: 1; }
+
+.btn-row.is-hidden {
+  display: none;
+}
 
 .result-card {
   background: var(--card-bg);
@@ -182,32 +249,81 @@ input[type="number"]:focus, input[type="text"]:focus {
   margin-bottom: 18px;
 }
 
-.result-card .label {
+.result-card[hidden] {
+  display: none;
+}
+
+.result-card.is-visible {
+  animation: reveal-card 0.5s var(--ease-out-expo) both;
+}
+
+@keyframes reveal-card {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.result-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   color: var(--muted);
   font-size: 14px;
-  margin-bottom: 6px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.result-heading .heading-icon {
+  font-size: 17px;
+  line-height: 1;
 }
 
 .result-card .value {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 800;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  opacity: 0;
+  animation: reveal-value 0.5s var(--ease-out-expo) 0.12s both;
 }
 
-.result-card .emoji {
-  font-size: 42px;
-  margin: 10px 0;
+@keyframes reveal-value {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sub-value {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sub-value.positive {
+  color: var(--green);
+  font-weight: 700;
 }
 
 .divider {
   height: 1px;
   background: #efe9fb;
-  margin: 20px 0;
-}
-
-.sub-value {
-  font-size: 12.5px;
-  color: var(--muted);
+  margin: 22px 0;
+  width: 100%;
 }
 
 .setup-hero {
@@ -221,32 +337,25 @@ input[type="number"]:focus, input[type="text"]:focus {
   color: var(--muted);
   text-align: center;
   line-height: 1.5;
-  margin-top: 6px;
-}
-
-.chip {
-  display: inline-block;
-  background: #f1ecff;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 999px;
-  margin-bottom: 14px;
+  margin-top: 18px;
 }
 
 .modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(20, 10, 40, 0.45);
-  display: none;
+  display: flex;
   align-items: flex-end;
   justify-content: center;
-  z-index: 20;
+  z-index: var(--z-modal-backdrop);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
 }
 
 .modal-overlay.active {
-  display: flex;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .modal-sheet {
@@ -257,6 +366,12 @@ input[type="number"]:focus, input[type="text"]:focus {
   padding: 24px 20px max(24px, env(safe-area-inset-bottom));
   max-height: 88vh;
   overflow-y: auto;
+  transform: translateY(24px);
+  transition: transform 0.28s var(--ease-out-expo);
+}
+
+.modal-overlay.active .modal-sheet {
+  transform: translateY(0);
 }
 
 .modal-sheet h2 {
@@ -273,6 +388,17 @@ input[type="number"]:focus, input[type="text"]:focus {
   text-align: center;
   color: var(--muted);
   gap: 10px;
+  padding: 24px 12px;
+  animation: fade-in 0.4s var(--ease-out-quart) both;
+}
+
+.empty-state .empty-icon {
+  font-size: 34px;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .error-text {
@@ -283,4 +409,15 @@ input[type="number"]:focus, input[type="text"]:focus {
   display: none;
 }
 
-.error-text.active { display: block; }
+.error-text.active {
+  display: block;
+  animation: fade-in 0.2s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

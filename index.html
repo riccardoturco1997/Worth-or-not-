@@ -65,28 +65,29 @@
       </div>
 
       <div id="empty-state" class="empty-state">
-        <div style="font-size:38px;">🤔</div>
+        <div class="empty-icon">🤔</div>
         <p>Inserisci un prezzo e scopri se ne vale davvero la pena.</p>
       </div>
 
-      <div id="result-card" class="result-card" style="display:none;">
-        <span class="chip">Time at Work</span>
-        <div class="label">Tempo di lavoro necessario</div>
-        <div class="value" id="work-time-value">—</div>
-        <div class="emoji">⏰</div>
+      <div id="result-card" class="result-card" hidden aria-live="polite">
+        <div class="result-block">
+          <div class="result-heading"><span class="heading-icon">⏰</span><span>Tempo di lavoro necessario</span></div>
+          <div class="value" id="work-time-value">—</div>
+          <div class="sub-value" id="work-time-detail"></div>
+        </div>
 
         <div class="divider"></div>
 
-        <span class="chip">Invested Instead</span>
-        <div class="label">Se investissi questi soldi per <span id="invest-years-label">5</span> anni</div>
-        <div class="value" id="invested-value">—</div>
-        <div class="sub-value" id="invested-gain"></div>
-        <div class="emoji">📈</div>
+        <div class="result-block">
+          <div class="result-heading"><span class="heading-icon">📈</span><span>Se lo investissi per <span id="invest-years-label">5</span> anni</span></div>
+          <div class="value" id="invested-value">—</div>
+          <div class="sub-value positive" id="invested-gain"></div>
+        </div>
 
         <p class="disclaimer">Stima basata sul rendimento medio storico di un indice azionario mondiale. I rendimenti passati non garantiscono risultati futuri.</p>
       </div>
 
-      <div class="btn-row">
+      <div class="btn-row is-hidden" id="action-row">
         <button id="reset-btn" class="btn btn-secondary">Nuovo calcolo</button>
       </div>
     </section>
@@ -95,8 +96,8 @@
 
   <!-- MODALE IMPOSTAZIONI -->
   <div id="settings-overlay" class="modal-overlay">
-    <div class="modal-sheet">
-      <h2>Modifica profilo</h2>
+    <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <h2 id="settings-title">Modifica profilo</h2>
       <div class="field">
         <label for="settings-salary">Retribuzione netta mensile (€)</label>
         <input type="number" id="settings-salary" inputmode="decimal" min="0" />

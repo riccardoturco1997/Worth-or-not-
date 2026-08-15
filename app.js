@@ -91,9 +91,11 @@ const resetBtn = document.getElementById("reset-btn");
 const settingsBtn = document.getElementById("settings-btn");
 
 const workTimeValue = document.getElementById("work-time-value");
+const workTimeDetail = document.getElementById("work-time-detail");
 const investedValue = document.getElementById("invested-value");
 const investedGain = document.getElementById("invested-gain");
 const investYearsLabel = document.getElementById("invest-years-label");
+const actionRow = document.getElementById("action-row");
 
 const settingsOverlay = document.getElementById("settings-overlay");
 const settingsSalary = document.getElementById("settings-salary");
@@ -153,32 +155,52 @@ setupSaveBtn.addEventListener("click", () => {
   showView(mainView);
 });
 
-calcBtn.addEventListener("click", () => {
-  const cost = parseFloat(productCostInput.value.replace(",", "."));
-  if (!cost || cost <= 0) {
-    productCostInput.focus();
-    productCostInput.classList.add("shake");
-    setTimeout(() => productCostInput.classList.remove("shake"), 300);
-    return;
-  }
-
+function showResult(cost) {
   const wage = hourlyWage(profile);
   const hoursNeeded = cost / wage;
   const fv = futureValue(cost, profile.annualReturn, profile.investYears);
   const gain = fv - cost;
+  const roundedHours = Math.round(hoursNeeded * 10) / 10;
 
   workTimeValue.textContent = formatWorkTime(hoursNeeded, profile);
+  workTimeDetail.textContent = `${formatNum(roundedHours)} ore a ${formatCurrency(wage)}/ora`;
   investedValue.textContent = formatCurrency(fv);
   investedGain.textContent = `+${formatCurrency(gain)} stimati (${profile.annualReturn}%/anno)`;
 
   emptyState.style.display = "none";
-  resultCard.style.display = "block";
+  resultCard.hidden = false;
+  resultCard.classList.remove("is-visible");
+  // force reflow so the reveal animation replays on every calculation
+  void resultCard.offsetWidth;
+  resultCard.classList.add("is-visible");
+  actionRow.classList.remove("is-hidden");
+}
+
+function formatNum(n) {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1).replace(".", ",");
+}
+
+calcBtn.addEventListener("click", () => {
+  const cost = parseFloat(productCostInput.value.replace(",", "."));
+  if (!cost || cost <= 0) {
+    productCostInput.focus();
+    productCostInput.classList.add("input-error");
+    productCostInput.classList.remove("shake");
+    void productCostInput.offsetWidth;
+    productCostInput.classList.add("shake");
+    setTimeout(() => productCostInput.classList.remove("shake"), 400);
+    return;
+  }
+  productCostInput.classList.remove("input-error");
+  showResult(cost);
 });
 
 resetBtn.addEventListener("click", () => {
   productCostInput.value = "";
-  resultCard.style.display = "none";
+  resultCard.hidden = true;
+  resultCard.classList.remove("is-visible");
   emptyState.style.display = "flex";
+  actionRow.classList.add("is-hidden");
   productCostInput.focus();
 });
 
@@ -199,6 +221,11 @@ settingsBtn.addEventListener("click", openSettings);
 settingsCloseBtn.addEventListener("click", closeSettings);
 settingsOverlay.addEventListener("click", (e) => {
   if (e.target === settingsOverlay) closeSettings();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && settingsOverlay.classList.contains("active")) {
+    closeSettings();
+  }
 });
 
 settingsSaveBtn.addEventListener("click", () => {
@@ -225,8 +252,9 @@ settingsSaveBtn.addEventListener("click", () => {
   investYearsLabel.textContent = profile.investYears;
   closeSettings();
 
-  if (resultCard.style.display === "block") {
-    calcBtn.click();
+  if (!resultCard.hidden) {
+    const cost = parseFloat(productCostInput.value.replace(",", "."));
+    if (cost > 0) showResult(cost);
   }
 });
 
